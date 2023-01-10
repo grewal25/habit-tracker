@@ -1,29 +1,47 @@
-import {useState, useEffect} from 'react'
+import { useState, useEffect } from "react";
 
-function Timer(){
-    const [count, setCount] = useState(20);
-    const [isRunning, setIsRunning] = useState(false)
+const Timer = () => {
+  const [timer, setTimer] = useState<number>(5);
+  const [count, setCount] = useState<number>(timer);
+  const [isRunning, setIsRunning] = useState<boolean>(false);
 
-    useEffect(()=>{
-        if(!isRunning){
-            return
-        }
-        const interval = setInterval(()=>{
-            setCount(count-1)
-        }, 1000)
-        return ()=>clearInterval(interval)
-    },[count,  isRunning])
+  useEffect(() => {
+    let interval: any = null;
+    if (!isRunning) {
+      return;
+    }
+    interval = setInterval(() => {
+      setCount((prevCount) => prevCount - 1);
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [isRunning, count]);
 
-    return(
-        <>
-            {/* create a timer funtion that will run for 20 mins */}
-            <button onClick={() => setIsRunning(!isRunning)}>
-        {isRunning ? 'Stop' : 'Start'}
-      </button>
-      <p>{count}</p>
-            {/* create a timer funtion that will run for 20 mins */}
-        </>
-    )
-}
+  const handleSelectedTime = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    setTimer(Number(event.target.value));
+    setCount(Number(event.target.value));
+  };
+
+  const handleStartStop = () => {
+    setIsRunning(!isRunning);
+  };
+
+  return (
+    <>
+      <form>
+        <label>
+          pick a time:
+          <select value={timer} onChange={handleSelectedTime}>
+            <option value={5}>5 mins</option>
+            <option value={10}>10 mins</option>
+            <option value={20}>20 mins</option>
+          </select>
+        </label>
+      </form>
+      <button onClick={handleStartStop}>{count > 0 && count && isRunning ? "Stop" : "Start"}</button>
+
+      <p>count: {count > 0 ? count : 'time over :)'}</p>
+    </>
+  );
+};
 
 export default Timer;
