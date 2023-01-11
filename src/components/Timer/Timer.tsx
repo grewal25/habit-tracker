@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
 
 const Timer = () => {
-  const [timer, setTimer] = useState<number>(5);
-  const [count, setCount] = useState<number>(timer);
+  const [seconds, setSeconds] = useState<number>(300);
+  const [time, setTime] = useState<string>("05:00");
   const [isRunning, setIsRunning] = useState<boolean>(false);
 
   useEffect(() => {
@@ -11,14 +11,25 @@ const Timer = () => {
       return;
     }
     interval = setInterval(() => {
-      setCount((prevCount) => prevCount - 1);
+      if (seconds === 0) {
+        clearInterval(interval);
+        setTime("Time's up!");
+      } else {
+        setSeconds((prevSeconds) => prevSeconds - 1);
+        const minutes = Math.floor(seconds / 60);
+        const sec = seconds % 60;
+        setTime(
+          `${minutes < 10 ? "0" : ""}${minutes}:${sec < 10 ? "0" : ""}${sec}`
+        );
+      }
     }, 1000);
     return () => clearInterval(interval);
-  }, [isRunning, count]);
+  }, [isRunning, seconds]);
 
   const handleSelectedTime = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    setTimer(Number(event.target.value));
-    setCount(Number(event.target.value));
+    setSeconds(parseInt(event.target.value));
+    const minutes = Math.floor(parseInt(event.target.value) / 60);
+    setTime(`${minutes < 10 ? "0" : ""}${minutes}:00`);
   };
 
   const handleStartStop = () => {
@@ -30,16 +41,16 @@ const Timer = () => {
       <form>
         <label>
           pick a time:
-          <select value={timer} onChange={handleSelectedTime}>
-            <option value={5}>5 mins</option>
-            <option value={10}>10 mins</option>
-            <option value={20}>20 mins</option>
+          <select value={seconds} onChange={handleSelectedTime}>
+            <option value={300}>5 mins</option>
+            <option value={600}>10 mins</option>
+            <option value={1200}>20 mins</option>
           </select>
         </label>
       </form>
-      <button onClick={handleStartStop}>{count > 0 && count && isRunning ? "Stop" : "Start"}</button>
+      <button onClick={handleStartStop}>{isRunning ? "Stop" : "Start"}</button>
 
-      <p>count: {count > 0 ? count : 'time over :)'}</p>
+      <p>Time remaining: {time}</p>
     </>
   );
 };
