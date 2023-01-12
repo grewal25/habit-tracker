@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
 
 const Timer = () => {
-  const [seconds, setSeconds] = useState<number>(300);
+  const [seconds, setSeconds] = useState<number>(0);
+  const [selectedSeconds, setSelectedSeconds] = useState<number>(300);
   const [time, setTime] = useState<string>("05:00");
   const [isRunning, setIsRunning] = useState<boolean>(false);
 
@@ -14,6 +15,7 @@ const Timer = () => {
       if (seconds === 0) {
         clearInterval(interval);
         setTime("Time's up!");
+        setIsRunning(false);
       } else {
         setSeconds((prevSeconds) => prevSeconds - 1);
         const minutes = Math.floor(seconds / 60);
@@ -27,13 +29,13 @@ const Timer = () => {
   }, [isRunning, seconds]);
 
   const handleSelectedTime = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    setSeconds(parseInt(event.target.value));
-    const minutes = Math.floor(parseInt(event.target.value) / 60);
-    setTime(`${minutes < 10 ? "0" : ""}${minutes}:00`);
+    setSelectedSeconds(parseInt(event.target.value));
   };
 
   const handleStartStop = () => {
     setIsRunning(!isRunning);
+    if(!isRunning)
+    setSeconds(selectedSeconds);
   };
 
   return (
@@ -41,7 +43,7 @@ const Timer = () => {
       <form>
         <label>
           pick a time:
-          <select value={seconds} onChange={handleSelectedTime}>
+          <select value={selectedSeconds} onChange={handleSelectedTime}>
             <option value={300}>5 mins</option>
             <option value={600}>10 mins</option>
             <option value={1200}>20 mins</option>
