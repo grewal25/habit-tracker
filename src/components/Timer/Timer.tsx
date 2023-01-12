@@ -1,29 +1,60 @@
-import {useState, useEffect} from 'react'
+import { useState, useEffect } from "react";
 
-function Timer(){
-    const [count, setCount] = useState(20);
-    const [isRunning, setIsRunning] = useState(false)
+const Timer = () => {
+  const [seconds, setSeconds] = useState<number>(0);
+  const [selectedSeconds, setSelectedSeconds] = useState<number>(300);
+  const [time, setTime] = useState<string>("05:00");
+  const [isRunning, setIsRunning] = useState<boolean>(false);
 
-    useEffect(()=>{
-        if(!isRunning){
-            return
-        }
-        const interval = setInterval(()=>{
-            setCount(count-1)
-        }, 1000)
-        return ()=>clearInterval(interval)
-    },[count,  isRunning])
+  useEffect(() => {
+    let interval: any = null;
+    if (!isRunning) {
+      return;
+    }
+    interval = setInterval(() => {
+      if (seconds === 0) {
+        clearInterval(interval);
+        setTime("Time's up!");
+        setIsRunning(false);
+      } else {
+        setSeconds((prevSeconds) => prevSeconds - 1);
+        const minutes = Math.floor(seconds / 60);
+        const sec = seconds % 60;
+        setTime(
+          `${minutes < 10 ? "0" : ""}${minutes}:${sec < 10 ? "0" : ""}${sec}`
+        );
+      }
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [isRunning, seconds]);
 
-    return(
-        <>
-            {/* create a timer funtion that will run for 20 mins */}
-            <button onClick={() => setIsRunning(!isRunning)}>
-        {isRunning ? 'Stop' : 'Start'}
-      </button>
-      <p>{count}</p>
-            {/* create a timer funtion that will run for 20 mins */}
-        </>
-    )
-}
+  const handleSelectedTime = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    setSelectedSeconds(parseInt(event.target.value));
+  };
+
+  const handleStartStop = () => {
+    setIsRunning(!isRunning);
+    if(!isRunning)
+    setSeconds(selectedSeconds);
+  };
+
+  return (
+    <>
+      <form>
+        <label>
+          pick a time:
+          <select value={selectedSeconds} onChange={handleSelectedTime}>
+            <option value={300}>5 mins</option>
+            <option value={600}>10 mins</option>
+            <option value={1200}>20 mins</option>
+          </select>
+        </label>
+      </form>
+      <button onClick={handleStartStop}>{isRunning ? "Stop" : "Start"}</button>
+
+      <p>Time remaining: {time}</p>
+    </>
+  );
+};
 
 export default Timer;
