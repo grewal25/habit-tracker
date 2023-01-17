@@ -1,11 +1,24 @@
 import React from 'react';
 import Timer from './components/Timer/Timer'
 import './App.css';
+//import { BrowserRouter as Router, Route,Routes } from "react-router-dom";
+import { BrowserRouter, Switch, Route } from "react-router-dom";
+import Todos from './components/Todos/Todos';
 
-function App() {
+const App:React.FC =()=> {
   return (
    <>
-   <Timer />
+
+<BrowserRouter>
+  <Switch>
+      <Route  path="/home">
+        <Timer />
+      </Route>
+      <Route  path="/todos">
+        <Todos />
+      </Route>
+      </Switch>
+    </BrowserRouter>
    </>
   );
 }
