@@ -52,7 +52,8 @@ const Timer = () => {
       </form>
       <button onClick={handleStartStop}>{isRunning ? "Stop" : "Start"}</button>
 
-      <p>Time remaining: {time}</p>
+      <p data-testid="time-remaining">Time remaining: {time}</p>
+
     </>
   );
 };
